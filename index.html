@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>学生対応チーム窓口 | PARADIGM Co., LTD.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f6fb;
+    --surface:#ffffff;
+    --border:#dde3f3;
+    --ink:#161b33;
+    --muted:#5c6488;
+    --navy:#222b55;
+    --navy-ink:#ffffff;
+    --teal:#1fa88e;
+    --teal-soft:#e6f7f4;
+    --shadow: 0 20px 45px -25px rgba(22,27,51,.35);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1220;
+      --surface:#171b30;
+      --border:#2a3156;
+      --ink:#f1f3fb;
+      --muted:#9aa2c7;
+      --navy:#3a4cad;
+      --navy-ink:#ffffff;
+      --teal:#2fd9bd;
+      --teal-soft:#132a28;
+      --shadow: 0 20px 45px -25px rgba(0,0,0,.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f1220;
+    --surface:#171b30;
+    --border:#2a3156;
+    --ink:#f1f3fb;
+    --muted:#9aa2c7;
+    --navy:#3a4cad;
+    --navy-ink:#ffffff;
+    --teal:#2fd9bd;
+    --teal-soft:#132a28;
+    --shadow: 0 20px 45px -25px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+
+  *{ box-sizing:border-box; }
+  html, body{ margin:0; padding:0; }
+  img{ max-width:100%; }
+  [hidden]{ display:none !important; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Sans JP", "Yu Gothic UI", sans-serif;
+    display:flex;
+    justify-content:center;
+    padding-inline:20px;
+    padding-block:max(32px, env(safe-area-inset-top)) max(32px, env(safe-area-inset-bottom));
+  }
+
+  .page{ width:100%; max-width:420px; }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:28px;
+  }
+  .dotgrid{ display:grid; grid-template-columns:repeat(3,5px); gap:3px; flex:none; }
+  .dotgrid span{ width:5px; height:5px; border-radius:50%; background:var(--navy); }
+  .dotgrid span:nth-child(3), .dotgrid span:nth-child(6), .dotgrid span:nth-child(7), .dotgrid span:nth-child(8){ opacity:0; }
+  .brand-name{ font-weight:900; font-size:.8rem; letter-spacing:.04em; color:var(--muted); }
+
+  .eyebrow{
+    font-weight:900;
+    font-size:.72rem;
+    letter-spacing:.14em;
+    color:var(--teal);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .eyebrow::before, .eyebrow::after{ content:""; height:1px; width:22px; background:currentColor; opacity:.55; }
+
+  h1{
+    font-weight:900;
+    font-size:clamp(1.5rem, 6vw, 1.9rem);
+    line-height:1.35;
+    letter-spacing:.01em;
+    text-wrap:balance;
+    margin:0 0 10px;
+  }
+  .lede{
+    color:var(--muted);
+    font-size:.92rem;
+    line-height:1.7;
+    margin:0 0 28px;
+  }
+  .lede b{ color:var(--ink); font-weight:700; }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:24px 20px;
+    margin-bottom:16px;
+  }
+
+  .addr-label{
+    font-weight:900;
+    font-size:.68rem;
+    letter-spacing:.1em;
+    color:var(--navy);
+    margin-bottom:8px;
+  }
+  .addr-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .addr{
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:.01em;
+    word-break:break-all;
+    user-select:all;
+    flex:1 1 auto;
+    min-width:0;
+  }
+  .copy-btn{
+    flex:none;
+    border:1px solid var(--border);
+    background:var(--teal-soft);
+    color:var(--teal);
+    font-family:inherit;
+    font-weight:700;
+    font-size:.8rem;
+    padding:9px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    transition:transform .12s ease;
+  }
+  .copy-btn:active{ transform:scale(.96); }
+  .copy-btn[data-copied="true"]{ background:var(--teal); color:var(--navy-ink); border-color:transparent; }
+
+  .hint{
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px dashed var(--border);
+    font-size:.82rem;
+    color:var(--muted);
+    line-height:1.6;
+  }
+
+  .section-label{
+    font-weight:900;
+    font-size:.68rem;
+    letter-spacing:.1em;
+    color:var(--muted);
+    margin:28px 0 10px;
+  }
+
+  .apps{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .app-btn{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:14px 16px;
+    text-decoration:none;
+    color:var(--ink);
+    font-weight:700;
+    font-size:.92rem;
+    transition:border-color .15s ease, transform .12s ease;
+  }
+  .app-btn:active{ transform:scale(.985); }
+  .app-btn:hover{ border-color:var(--navy); }
+  .app-icon{
+    flex:none;
+    width:34px; height:34px;
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:.78rem;
+    color:#fff;
+  }
+  .app-btn .chev{ margin-left:auto; color:var(--muted); font-size:.85rem; }
+
+  footer{
+    margin-top:30px;
+    font-size:.72rem;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  @media (max-width:360px){
+    h1{ font-size:1.4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="brand">
+    <div class="dotgrid"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="brand-name">PARADIGM Co., LTD.</div>
+  </div>
+
+  <div class="eyebrow">CONTACT</div>
+  <h1>気になったら、気軽にご連絡を。</h1>
+  <p class="lede">先輩社員3名（<b>秋葉・大西・増田</b>）が、学生対応チームとして直接対応します。質問・相談など、お気軽にどうぞ。</p>
+
+  <div class="card">
+    <div class="addr-label">宛先メールアドレス</div>
+    <div class="addr-row">
+      <div class="addr" id="addr">recruit-campus@prdm.biz</div>
+      <button class="copy-btn" id="copyBtn" type="button">コピー</button>
+    </div>
+    <div class="hint">お名前と学年を添えていただけると、こちらも返信しやすいです。</div>
+  </div>
+
+  <div class="section-label">お使いのメールアプリで送る</div>
+  <div class="apps">
+    <a class="app-btn" id="btnMail" href="#">
+      <span class="app-icon" style="background:var(--navy)">M</span>
+      標準メールで送る
+      <span class="chev">›</span>
+    </a>
+    <a class="app-btn" id="btnGmail" href="#">
+      <span class="app-icon" style="background:#ea4335">G</span>
+      Gmailで送る
+      <span class="chev">›</span>
+    </a>
+    <a class="app-btn" id="btnOutlook" href="#">
+      <span class="app-icon" style="background:#0a66c2">O</span>
+      Outlookで送る
+      <span class="chev">›</span>
+    </a>
+  </div>
+
+  <footer>うまく開かない場合は、上のアドレスをコピーしてご利用のメールアプリに貼り付けてください。</footer>
+</div>
+
+<script>
+(function(){
+  var ADDR = "recruit-campus@prdm.biz";
+  var SUBJECT = "【ゼミ説明会】お問い合わせ";
+  var BODY = "お名前：\nご学年：\n\n";
+
+  var es = encodeURIComponent(SUBJECT);
+  var eb = encodeURIComponent(BODY);
+
+  document.getElementById("btnMail").href =
+    "mailto:" + ADDR + "?subject=" + es + "&body=" + eb;
+
+  // Gmail/Outlookは「アプリ専用スキーム」を先に試し、アプリが無ければ
+  // ブラウザ版へフォールバックする（タブが切り替わればページが隠れるので、
+  // 一定時間後もページが見えたまま＝アプリが開かなかった、とみなす）
+  function openAppThenWeb(appUrl, webUrl){
+    var fellBack = false;
+    var fallback = function(){
+      if (fellBack) return;
+      fellBack = true;
+      window.location.href = webUrl;
+    };
+    var timer = setTimeout(fallback, 1200);
+    document.addEventListener("visibilitychange", function onVis(){
+      if (document.hidden) {
+        clearTimeout(timer);
+        document.removeEventListener("visibilitychange", onVis);
+      }
+    });
+    window.location.href = appUrl;
+  }
+
+  var gmailWeb = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(ADDR) + "&su=" + es + "&body=" + eb;
+  var gmailApp = "googlegmail://co?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
+  document.getElementById("btnGmail").addEventListener("click", function(e){
+    e.preventDefault();
+    openAppThenWeb(gmailApp, gmailWeb);
+  });
+
+  var outlookWeb = "https://outlook.office.com/mail/deeplink/compose?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
+  var outlookApp = "ms-outlook://compose?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
+  document.getElementById("btnOutlook").addEventListener("click", function(e){
+    e.preventDefault();
+    openAppThenWeb(outlookApp, outlookWeb);
+  });
+
+  var copyBtn = document.getElementById("copyBtn");
+  copyBtn.addEventListener("click", function(){
+    function done(){
+      copyBtn.textContent = "コピーしました";
+      copyBtn.setAttribute("data-copied", "true");
+      setTimeout(function(){
+        copyBtn.textContent = "コピー";
+        copyBtn.removeAttribute("data-copied");
+      }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ADDR).then(done).catch(function(){
+        selectAddr();
+      });
+    } else {
+      selectAddr();
+    }
+  });
+
+  function selectAddr(){
+    var el = document.getElementById("addr");
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+})();
+</script>
+</body>
+</html>
