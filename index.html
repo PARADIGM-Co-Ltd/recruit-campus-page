@@ -72,9 +72,7 @@
     gap:10px;
     margin-bottom:28px;
   }
-  .dotgrid{ display:grid; grid-template-columns:repeat(3,5px); gap:3px; flex:none; }
-  .dotgrid span{ width:5px; height:5px; border-radius:50%; background:var(--navy); }
-  .dotgrid span:nth-child(3), .dotgrid span:nth-child(6), .dotgrid span:nth-child(7), .dotgrid span:nth-child(8){ opacity:0; }
+  .brand-logo{ flex:none; display:block; border-radius:6px; }
   .brand-name{ font-weight:900; font-size:.8rem; letter-spacing:.04em; color:var(--muted); }
 
   .eyebrow{
@@ -215,13 +213,13 @@
 <body>
 <div class="page">
   <div class="brand">
-    <div class="dotgrid"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <img class="brand-logo" src="logo.png" alt="PARADIGM" width="28" height="28">
     <div class="brand-name">PARADIGM Co., LTD.</div>
   </div>
 
   <div class="eyebrow">CONTACT</div>
-  <h1>気になったら、気軽にご連絡を。</h1>
-  <p class="lede">先輩社員3名（<b>秋葉・大西・増田</b>）が、学生対応チームとして直接対応します。質問・相談など、お気軽にどうぞ。</p>
+  <h1>気軽にご連絡を。</h1>
+  <p class="lede">先輩社員3名（<b>増田・秋葉・大西</b>）が、直接対応します。質問・相談など、お気軽にどうぞ。</p>
 
   <div class="card">
     <div class="addr-label">宛先メールアドレス</div>
@@ -229,7 +227,7 @@
       <div class="addr" id="addr">recruit-campus@prdm.biz</div>
       <button class="copy-btn" id="copyBtn" type="button">コピー</button>
     </div>
-    <div class="hint">お名前と学年を添えていただけると、こちらも返信しやすいです。</div>
+    <div class="hint">ご連絡の際はお名前と学年を一言添えていただけると嬉しいです。気軽な質問も大歓迎です。</div>
   </div>
 
   <div class="section-label">お使いのメールアプリで送る</div>
