@@ -266,9 +266,16 @@
   document.getElementById("btnMail").href =
     "mailto:" + ADDR + "?subject=" + es + "&body=" + eb;
 
-  // Gmail/Outlookは「アプリ専用スキーム」を先に試し、アプリが無ければ
-  // ブラウザ版へフォールバックする（タブが切り替わればページが隠れるので、
-  // 一定時間後もページが見えたまま＝アプリが開かなかった、とみなす）
+  // 端末ごとにアプリの開き方が異なる：
+  // - iOS: アプリ専用スキーム（googlegmail:// / ms-outlook://）を叩き、
+  //   一定時間ページが見えたまま＝開かなかった、とみなしてWeb版へ切り替える
+  // - Android: Chrome対応の「Intent URI」でパッケージ名を直接指定する。
+  //   未インストール時のWeb版フォールバックはOS側がintent内で処理してくれる
+  var ua = navigator.userAgent || "";
+  var platform = /Android/i.test(ua) ? "android"
+               : /iPhone|iPad|iPod/i.test(ua) ? "ios"
+               : "other";
+
   function openAppThenWeb(appUrl, webUrl){
     var fellBack = false;
     var fallback = function(){
@@ -286,19 +293,29 @@
     window.location.href = appUrl;
   }
 
+  function wireMailButton(id, iosScheme, androidPackage, webUrl){
+    document.getElementById(id).addEventListener("click", function(e){
+      e.preventDefault();
+      if (platform === "ios") {
+        openAppThenWeb(iosScheme, webUrl);
+      } else if (platform === "android") {
+        var intentUrl = "intent://" + ADDR + "?subject=" + es + "&body=" + eb +
+          "#Intent;scheme=mailto;package=" + androidPackage +
+          ";S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end";
+        window.location.href = intentUrl;
+      } else {
+        window.location.href = webUrl;
+      }
+    });
+  }
+
   var gmailWeb = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(ADDR) + "&su=" + es + "&body=" + eb;
-  var gmailApp = "googlegmail://co?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
-  document.getElementById("btnGmail").addEventListener("click", function(e){
-    e.preventDefault();
-    openAppThenWeb(gmailApp, gmailWeb);
-  });
+  var gmailAppIOS = "googlegmail://co?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
+  wireMailButton("btnGmail", gmailAppIOS, "com.google.android.gm", gmailWeb);
 
   var outlookWeb = "https://outlook.office.com/mail/deeplink/compose?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
-  var outlookApp = "ms-outlook://compose?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
-  document.getElementById("btnOutlook").addEventListener("click", function(e){
-    e.preventDefault();
-    openAppThenWeb(outlookApp, outlookWeb);
-  });
+  var outlookAppIOS = "ms-outlook://compose?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
+  wireMailButton("btnOutlook", outlookAppIOS, "com.microsoft.office.outlook", outlookWeb);
 
   var copyBtn = document.getElementById("copyBtn");
   copyBtn.addEventListener("click", function(){
