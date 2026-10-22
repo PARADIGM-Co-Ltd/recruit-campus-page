@@ -267,12 +267,11 @@
   // 端末ごとにアプリの開き方が異なる：
   // - iOS: アプリ専用スキーム（googlegmail:// / ms-outlook://）を叩き、
   //   一定時間ページが見えたまま＝開かなかった、とみなしてWeb版へ切り替える
-  // - Android: Chrome対応の「Intent URI」でパッケージ名を直接指定する。
-  //   未インストール時のWeb版フォールバックはOS側がintent内で処理してくれる
+  // - Android: 独自のintent://方式はmailto://のように余分な"//"が
+  //   宛先に混入し誤送信を招く不具合があったため廃止。標準のmailto:に統一する
+  //   （Android OSが対応アプリの選択肢を自動で出す）
   var ua = navigator.userAgent || "";
-  var platform = /Android/i.test(ua) ? "android"
-               : /iPhone|iPad|iPod/i.test(ua) ? "ios"
-               : "other";
+  var platform = /iPhone|iPad|iPod/i.test(ua) ? "ios" : "other";
 
   function openAppThenWeb(appUrl, webUrl){
     var fellBack = false;
@@ -291,29 +290,27 @@
     window.location.href = appUrl;
   }
 
-  function wireMailButton(id, iosScheme, androidPackage, webUrl){
+  var mailtoUrl = "mailto:" + ADDR + "?subject=" + es + "&body=" + eb;
+
+  function wireMailButton(id, iosScheme, webUrl){
     document.getElementById(id).addEventListener("click", function(e){
-      e.preventDefault();
       if (platform === "ios") {
+        e.preventDefault();
         openAppThenWeb(iosScheme, webUrl);
-      } else if (platform === "android") {
-        var intentUrl = "intent://" + ADDR + "?subject=" + es + "&body=" + eb +
-          "#Intent;scheme=mailto;package=" + androidPackage +
-          ";S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end";
-        window.location.href = intentUrl;
-      } else {
-        window.location.href = webUrl;
       }
+      // Android・その他は <a href="mailto:..."> のデフォルト動作に任せる
     });
   }
 
   var gmailWeb = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(ADDR) + "&su=" + es + "&body=" + eb;
   var gmailAppIOS = "googlegmail://co?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
-  wireMailButton("btnGmail", gmailAppIOS, "com.google.android.gm", gmailWeb);
+  document.getElementById("btnGmail").href = mailtoUrl;
+  wireMailButton("btnGmail", gmailAppIOS, gmailWeb);
 
   var outlookWeb = "https://outlook.office.com/mail/deeplink/compose?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
   var outlookAppIOS = "ms-outlook://compose?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
-  wireMailButton("btnOutlook", outlookAppIOS, "com.microsoft.office.outlook", outlookWeb);
+  document.getElementById("btnOutlook").href = mailtoUrl;
+  wireMailButton("btnOutlook", outlookAppIOS, outlookWeb);
 
   var copyBtn = document.getElementById("copyBtn");
   copyBtn.addEventListener("click", function(){
