@@ -231,7 +231,9 @@
   </div>
 
   <div class="section-label">お使いのメールアプリで送る</div>
-  <div class="apps">
+
+  <!-- iOS: アプリごとに個別ボタン（アプリ専用スキーム→ダメならWeb版） -->
+  <div class="apps" id="appsIOS" hidden>
     <a class="app-btn" id="btnMail" href="#">
       <span class="app-icon" style="background:var(--navy)">M</span>
       標準メールで送る
@@ -249,6 +251,15 @@
     </a>
   </div>
 
+  <!-- Android・その他: OSの選択ダイアログに任せる単一ボタン -->
+  <div class="apps" id="appsOther" hidden>
+    <a class="app-btn" id="btnMailSingle" href="#">
+      <span class="app-icon" style="background:var(--navy)">M</span>
+      メールを送る
+      <span class="chev">›</span>
+    </a>
+  </div>
+
   <footer>うまく開かない場合は、上のアドレスをコピーしてご利用のメールアプリに貼り付けてください。</footer>
 </div>
 
@@ -261,17 +272,24 @@
   var es = encodeURIComponent(SUBJECT);
   var eb = encodeURIComponent(BODY);
 
-  document.getElementById("btnMail").href =
-    "mailto:" + ADDR + "?subject=" + es + "&body=" + eb;
+  var mailtoUrl = "mailto:" + ADDR + "?subject=" + es + "&body=" + eb;
 
-  // 端末ごとにアプリの開き方が異なる：
-  // - iOS: アプリ専用スキーム（googlegmail:// / ms-outlook://）を叩き、
+  // 端末ごとに画面構成と開き方を分ける：
+  // - iOS: 標準メール／Gmail／Outlookの3ボタン。アプリ専用スキームを叩き、
   //   一定時間ページが見えたまま＝開かなかった、とみなしてWeb版へ切り替える
-  // - Android: 独自のintent://方式はmailto://のように余分な"//"が
-  //   宛先に混入し誤送信を招く不具合があったため廃止。標準のmailto:に統一する
-  //   （Android OSが対応アプリの選択肢を自動で出す）
+  // - Android・その他: 「メールを送る」ボタン1つに統一。
+  //   独自のintent://方式はmailto://のように余分な"//"が宛先に混入し
+  //   誤送信を招く不具合があったため廃止し、標準のmailto:のみを使う
+  //   （複数アプリがあればOSが選択ダイアログを自動で出す）
   var ua = navigator.userAgent || "";
   var platform = /iPhone|iPad|iPod/i.test(ua) ? "ios" : "other";
+
+  if (platform === "ios") {
+    document.getElementById("appsIOS").hidden = false;
+  } else {
+    document.getElementById("appsOther").hidden = false;
+    document.getElementById("btnMailSingle").href = mailtoUrl;
+  }
 
   function openAppThenWeb(appUrl, webUrl){
     var fellBack = false;
@@ -290,15 +308,16 @@
     window.location.href = appUrl;
   }
 
-  var mailtoUrl = "mailto:" + ADDR + "?subject=" + es + "&body=" + eb;
+  document.getElementById("btnMail").href = mailtoUrl;
 
+  // iOS専用ボタン（appsIOS）にのみ使う。Android・その他ではappsOtherを表示し、
+  // この関数・btnGmail/btnOutlookは非表示のまま使われない
   function wireMailButton(id, iosScheme, webUrl){
     document.getElementById(id).addEventListener("click", function(e){
       if (platform === "ios") {
         e.preventDefault();
         openAppThenWeb(iosScheme, webUrl);
       }
-      // Android・その他は <a href="mailto:..."> のデフォルト動作に任せる
     });
   }
 
