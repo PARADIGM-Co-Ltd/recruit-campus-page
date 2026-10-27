@@ -167,6 +167,32 @@
     margin:28px 0 10px;
   }
 
+  .warn{
+    background:#fcf1dd;
+    border:1px solid #e8c583;
+    border-radius:14px;
+    padding:12px 14px;
+    margin-bottom:10px;
+  }
+  .warn-title{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-weight:900;
+    font-size:.78rem;
+    color:#9a6b1a;
+    margin-bottom:6px;
+  }
+  .warn p{ margin:0; font-size:.78rem; color:#8a6013; line-height:1.6; }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]) .warn{ background:#2a2213; border-color:#5c4a1e; }
+    :root:not([data-theme="light"]) .warn-title{ color:#e8c583; }
+    :root:not([data-theme="light"]) .warn p{ color:#d4b685; }
+  }
+  :root[data-theme="dark"] .warn{ background:#2a2213; border-color:#5c4a1e; }
+  :root[data-theme="dark"] .warn-title{ color:#e8c583; }
+  :root[data-theme="dark"] .warn p{ color:#d4b685; }
+
   .apps{
     display:flex;
     flex-direction:column;
@@ -251,13 +277,19 @@
     </a>
   </div>
 
-  <!-- Android・その他: OSの選択ダイアログに任せる単一ボタン -->
-  <div class="apps" id="appsOther" hidden>
-    <a class="app-btn" id="btnMailSingle" href="#">
-      <span class="app-icon" style="background:var(--navy)">M</span>
-      メールを送る
-      <span class="chev">›</span>
-    </a>
+  <!-- Android・PC・iPad等: OSの選択ダイアログに任せる単一ボタン -->
+  <div id="appsOther" hidden>
+    <div class="warn">
+      <div class="warn-title">⚠ PC・タブレットでは</div>
+      <p>上のアドレスをコピーして、ご利用のメールサービスに貼り付けてご連絡ください。</p>
+    </div>
+    <div class="apps">
+      <a class="app-btn" id="btnMailSingle" href="#">
+        <span class="app-icon" style="background:var(--navy)">M</span>
+        メールを送る
+        <span class="chev">›</span>
+      </a>
+    </div>
   </div>
 
   <footer>うまく開かない場合は、上のアドレスをコピーしてご利用のメールアプリに貼り付けてください。</footer>
