@@ -270,11 +270,19 @@
       Gmailで送る
       <span class="chev">›</span>
     </a>
+    <div class="warn" id="warnGmail" hidden>
+      <div class="warn-title">⚠ アプリが見つかりませんでした</div>
+      <p>上のアドレスをコピーして、ご利用のメールアプリで送信してください。</p>
+    </div>
     <a class="app-btn" id="btnOutlook" href="#">
       <span class="app-icon" style="background:#0a66c2">O</span>
       Outlookで送る
       <span class="chev">›</span>
     </a>
+    <div class="warn" id="warnOutlook" hidden>
+      <div class="warn-title">⚠ アプリが見つかりませんでした</div>
+      <p>上のアドレスをコピーして、ご利用のメールアプリで送信してください。</p>
+    </div>
   </div>
 
   <!-- Android・PC・iPad等: OSの選択ダイアログに任せる単一ボタン -->
@@ -308,7 +316,10 @@
 
   // 端末ごとに画面構成と開き方を分ける：
   // - iOS: 標準メール／Gmail／Outlookの3ボタン。アプリ専用スキームを叩き、
-  //   一定時間ページが見えたまま＝開かなかった、とみなしてWeb版へ切り替える
+  //   2秒待ってもページが見えたまま＝開かなかった、とみなして
+  //   ボタン下に警告メッセージを表示する（Web版への自動遷移はしない。
+  //   遷移させると、アプリ切り替えが2秒より遅れて成功した場合に
+  //   アプリとWeb版が両方開いてしまう不具合があったため）
   // - Android・その他: 「メールを送る」ボタン1つに統一。
   //   独自のintent://方式はmailto://のように余分な"//"が宛先に混入し
   //   誤送信を招く不具合があったため廃止し、標準のmailto:のみを使う
@@ -323,16 +334,16 @@
     document.getElementById("btnMailSingle").href = mailtoUrl;
   }
 
-  function openAppThenWeb(appUrl, webUrl){
-    var fellBack = false;
-    var fallback = function(){
-      if (fellBack) return;
-      fellBack = true;
-      window.location.href = webUrl;
-    };
-    var timer = setTimeout(fallback, 1200);
+  function tryOpenApp(appUrl, warnId){
+    var switched = false;
+    var timer = setTimeout(function(){
+      if (!switched) {
+        document.getElementById(warnId).hidden = false;
+      }
+    }, 2000);
     document.addEventListener("visibilitychange", function onVis(){
       if (document.hidden) {
+        switched = true;
         clearTimeout(timer);
         document.removeEventListener("visibilitychange", onVis);
       }
@@ -344,24 +355,22 @@
 
   // iOS専用ボタン（appsIOS）にのみ使う。Android・その他ではappsOtherを表示し、
   // この関数・btnGmail/btnOutlookは非表示のまま使われない
-  function wireMailButton(id, iosScheme, webUrl){
+  function wireMailButton(id, iosScheme, warnId){
     document.getElementById(id).addEventListener("click", function(e){
       if (platform === "ios") {
         e.preventDefault();
-        openAppThenWeb(iosScheme, webUrl);
+        tryOpenApp(iosScheme, warnId);
       }
     });
   }
 
-  var gmailWeb = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(ADDR) + "&su=" + es + "&body=" + eb;
   var gmailAppIOS = "googlegmail://co?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
   document.getElementById("btnGmail").href = mailtoUrl;
-  wireMailButton("btnGmail", gmailAppIOS, gmailWeb);
+  wireMailButton("btnGmail", gmailAppIOS, "warnGmail");
 
-  var outlookWeb = "https://outlook.office.com/mail/deeplink/compose?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
   var outlookAppIOS = "ms-outlook://compose?to=" + encodeURIComponent(ADDR) + "&subject=" + es + "&body=" + eb;
   document.getElementById("btnOutlook").href = mailtoUrl;
-  wireMailButton("btnOutlook", outlookAppIOS, outlookWeb);
+  wireMailButton("btnOutlook", outlookAppIOS, "warnOutlook");
 
   var copyBtn = document.getElementById("copyBtn");
   copyBtn.addEventListener("click", function(){
